@@ -34,3 +34,12 @@ exports.createGround = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+exports.getAllGrounds = async (req, res) => {
+  try {
+    const grounds = await PlayGround.find();
+    res.status(200).json(grounds);
+  } catch (error) {
+    
+  }
+}

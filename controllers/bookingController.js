@@ -15,7 +15,8 @@ exports.bookGround = async (req, res) => {
     if (!groundId || !date || !timeSlot) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    const userID = new mongoose.Types.ObjectId(req.userID);
+    
+    const userID = new mongoose.Types.ObjectId(req.user.userID);
     const groundID = new mongoose.Types.ObjectId(groundId);
 
     console.log("sending for zod validation: ", {userID, groundID, date});
@@ -47,13 +48,24 @@ exports.bookGround = async (req, res) => {
   }
 };
 
-exports.getUserBookings = (req, res) => {
+exports.getUserBookings = async (req, res) => {
   try {
-    const { userID } = req.params;
-    const bookings = new Booking.find({ userID }).populate("groundId");
+    console.log("Request parameters:", req.params);
+    const { userId } = req.params;
+    const userID = new mongoose.Types.ObjectId(userId); 
+
+    console.log("User ID:", userID);
+
+    const bookings = await Booking.find({ user: userID }).populate("venue");
+
+    if (!bookings || bookings.length === 0) {
+      console.log("No bookings found for user:", userID);
+      return res.status(404).json({ message: "No bookings found for this user." });
+    }
 
     res.status(200).json({ bookings });
   } catch (error) {
-    res.status(500).son({ error: "Server error" });
+    console.error("Error fetching user bookings:", error);
+    res.status(500).json({ error: "Server error", err: error.message });
   }
 };
