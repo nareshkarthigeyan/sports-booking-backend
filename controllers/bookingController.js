@@ -1,4 +1,5 @@
 const Booking = require("../models/Booking");
+const mongoose = require("mongoose");
 
 exports.bookGround = async (req, res) => {
   try {
@@ -14,9 +15,11 @@ exports.bookGround = async (req, res) => {
     if (!groundId || !date || !timeSlot) {
       return res.status(400).json({ error: "Missing required fields" });
     }
+    const userID = new mongoose.Types.ObjectId(req.userID);
+    const groundID = new mongoose.Types.ObjectId(groundId);
 
     const existingBooking = await Booking.findOne({
-      groundId,
+      venue: groundID,
       date,
       timeSlot,
     });
@@ -28,8 +31,8 @@ exports.bookGround = async (req, res) => {
     }
 
     await Booking.create({
-      user: req.userID,
-      groundId,
+      user: userID,
+      venue: groundID,
       date,
       timeSlot,
     });
@@ -37,7 +40,7 @@ exports.bookGround = async (req, res) => {
     res.status(201).json({ message: "Ground booked successfully!" });
   } catch (error) {
     console.error("Booking error:", error); // Logs full error
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: error.message });
   }
 };
 
