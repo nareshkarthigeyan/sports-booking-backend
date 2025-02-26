@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const { User, UserValidationSchema } = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -8,6 +8,8 @@ dotenv.config();
 exports.signup = async (req, res) => {
   try {
     const { name, email, number, password } = req.body;
+    UserValidationSchema.parse({ name, email, number, password });
+
     const passwordHash = await bcrypt.hash(password, 12);
 
     const newUser = await User.create({
@@ -18,10 +20,10 @@ exports.signup = async (req, res) => {
     });
 
     res.status(201).json({ message: "User created successfully", newUser });
-  } catch {
+  } catch (error) {
     res
       .status(400)
-      .json({ error: "User already exists or invalid credentials" });
+      .json({ error: error });
   }
 };
 

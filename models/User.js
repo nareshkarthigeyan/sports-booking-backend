@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { z } = require("zod");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -20,4 +21,14 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("User", UserSchema);
+const UserValidationSchema = z.object({
+  name: z.string().nonempty(),
+  email: z.string().email(),
+  phoneNo: z.number().optional(),
+  password: z.string().min(6),
+});
+
+module.exports = {
+  User: mongoose.model("User", UserSchema),
+  UserValidationSchema,
+};

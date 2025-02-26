@@ -18,6 +18,7 @@ app.use("/api/grounds", groundsRoutes);
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
+  
   .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 5001;
