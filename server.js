@@ -1,26 +1,29 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const sqlite3 = require("sqlite3").verbose();
 const dotenv = require("dotenv");
-const authRoutes = require("./routes/authRoutes");
-const groundsRoutes = require("./routes/playGroundRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
+const flightsRoutes = require("./routes/flightsRoutes");
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-app.use("/api", authRoutes);
-app.use("/api", bookingRoutes);
-app.use("/api/grounds", groundsRoutes);
+// SQLite DB setup
+const db = new sqlite3.Database(process.env.SQLITE_DB_PATH || './flights.db', (err) => {
+  if (err) {
+    console.error('Failed to connect to SQLite DB:', err.message);
+  } else {
+    console.log('Connected to SQLite database.');
+  }
+});
 
+// Make DB accessible in req
+app.use((req, res, next) => {
+  req.db = db;
+  next();
+});
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  
-  .catch((err) => console.log(err));
+app.use("/api/flights", flightsRoutes);
 
 const PORT = process.env.PORT || 5001;
-
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

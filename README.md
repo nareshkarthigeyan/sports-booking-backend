@@ -125,7 +125,7 @@ This project is a Node.js application that implements a RESTful API with authent
   - Response: `{ "message": "Booking successful" }`
 
 - **GET** `/api/bookings/:userId`
-  - Description: Retrieve all bookings for a specific user (requires JWT).
+  - Description: Retrieve all bookings for a specific user. 
   - Response: `[ { "bookingId": "string", "groundId": "string", "date": "YYYY-MM-DD", "time": "HH:MM" }, ... ]`
 
 
